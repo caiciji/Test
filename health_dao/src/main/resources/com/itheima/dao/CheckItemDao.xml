@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.CheckItemDao">
+    <!--新增检查项-->
+    <insert id="add" parameterType="checkItem">
+        insert into t_checkitem values(null,#{code},#{name},#{sex},#{age},#{price},#{type},#{attention},#{remark})
+    </insert>
+
+    <!--分页查询-->
+    <select id="findPage" parameterType="com.itheima.entity.QueryPageBean" resultType="checkItem">
+        select * from t_checkitem
+        <!--判断是否含有查询条件： 判断查询条件不是null，以及长度大于0即可-->
+        <where>
+            <if test="queryString !=null and queryString.length>0">
+                code like '%${queryString}%' or name like '%${queryString}%'
+                <!--code like "%"#{queryString}"%" or name like "%"#{queryString}"%"-->
+            </if>
+        </where>
+    </select>
+
+    <!--根据检查项的id 去查询 t_checkgroup_checkitem,看看是否有记录存在-->
+    <select id="findCountById" parameterType="int" resultType="int">
+        select count(0) from t_checkgroup_checkitem where checkitem_id=#{checkItemId}
+    </select>
+
+    <!--根据id删除检查项-->
+    <delete id="delete" parameterType="int">
+        delete from t_checkitem where id=#{checkItemId}
+    </delete>
+
+    <!--更新检查项-->
+    <update id="update" parameterType="checkItem">
+        update t_checkitem set code=#{code},name=#{name},sex=#{sex},age=#{age},
+        price=#{price},type=#{type},attention=#{attention},remark=#{remark} where id=#{id}
+    </update>
+
+    <!--查询所有的检查项-->
+    <select id="findAll" resultType="checkItem">
+        select * from t_checkitem
+    </select>
+</mapper>

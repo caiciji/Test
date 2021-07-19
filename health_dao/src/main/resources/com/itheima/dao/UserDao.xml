@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.UserDao">
+    <!--定义数据表的列和javabean的属性的映射关系-->
+    <resultMap id="userMap" type="user">
+        <!--
+            一个用户可以有多个角色(身份),所以这里要体现出来一对多的关系
+                property : 表示user类里面有这个属性roles 它是一个集合
+                select : 要想填充这个roles这个属性的值，就必须要去执行另一个Dao的某一个方法。
+                column  : 在执行那个方法的时候，要传递参数，传递的是哪一列
+        -->
+        <collection property="roles" column="id" select="com.itheima.dao.RoleDao.findRoleByUid"/>
+    </resultMap>
+
+    <!--根据用户来查询用户
+            1，下面的select语句明显就只查询了一张表 ： t_user表
+            2. 查询这张表，只会得到用户的基本信息，不知道这个用户属于什么角色，有哪些权限
+            3. 当我们的javabean里面有一些属性没有办法通过查询现在这张表就得以赋值的时候
+                必须要考虑有多表查询的情况，那么此时就不能使用resultType，应该使用resultMap
+    -->
+    <select id="findUserByUsername" parameterType="string" resultMap="userMap">
+        select * from t_user where username=#{username}
+    </select>
+</mapper>

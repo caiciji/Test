@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.CheckGroupDao">
+
+    <!--
+        往t_checkgroup 添加检查组的基本信息
+            id: 与方法名一样
+            parameterType: 参数类型
+            keyProperty: 返回的主键数据，使用CheckGroup这个类里面的什么属性来装
+            useGeneratedKeys : 是否使用数据库自己创建出来的id主键。是否由数据库生成主键，还是由mybatis自己搞出来主键
+    -->
+    <insert id="add" parameterType="checkGroup" keyProperty="id" useGeneratedKeys="true">
+        insert into t_checkgroup values(null,#{code},#{name},#{helpCode},#{sex},#{remark},#{attention})
+    </insert>
+
+    <!--
+        往中间表里面添加记录
+            在mybatis里面，方法的参数存在多个情况.
+    -->
+    <insert id="addItem" parameterType="int">
+        insert into t_checkgroup_checkitem values(#{checkGroupId},#{checkItemId})
+    </insert>
+
+    <!--分页查询检查组-->
+    <select id="findByCondition" parameterType="String" resultType="checkgroup">
+        select id,code,name,helpCode,sex,remark,attention from t_checkgroup
+        <where>
+            <if test="value != null and value.length > 0">
+                code like #{queryString} or name like #{queryString} or helpCode like #{queryString}
+            </if>
+        </where>
+    </select>
+
+    <!--通过id检查组的信息-->
+    <select id="findById" parameterType="int" resultType="checkgroup">
+        select id,code,name,helpCode,sex,remark,attention from t_checkgroup where id=#{id}
+    </select>
+
+    <!--通过检查组id查询选中的检查项id集合-->
+    <select id="findCheckItemIdsByCheckGroupId" parameterType="int" resultType="int">
+        select checkitem_id from t_checkgroup_checkitem where checkgroup_id=#{id}
+    </select>
+
+    <!--更新检查组信息-->
+    <update id="update" parameterType="Checkgroup">
+        update t_checkgroup set code=#{code},name=#{name},helpCode=#{helpCode},sex=#{sex},remark=#{remark},attention=#{attention} where id=#{id}
+    </update>
+
+    <!--通过检查组id删除检查组与检查项的旧关系-->
+    <delete id="deleteCheckGroupCheckItem" parameterType="int">
+        delete from t_checkgroup_checkitem where checkgroup_id=#{checkGroupId}
+    </delete>
+
+
+    <!--根据检查组的id，去查询t_setmeal_checkgroup表中看看有没有记录-->
+    <select id="findCountById" parameterType="int" resultType="int">
+        select count(0) from t_setmeal_checkgroup where checkgroup_id=#{id}
+    </select>
+
+    <!--删除检查组-->
+    <delete id="delete" parameterType="int">
+        delete from t_checkgroup where id=#{checkgroupId}
+    </delete>
+
+    <!--查询检查组的所有信息-->
+    <select id="findAll" parameterType="checkgroup" resultType="checkgroup">
+        select * from t_checkgroup
+    </select>
+</mapper>

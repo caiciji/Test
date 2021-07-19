@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.SetmealDao">
+   <!--1.添加套餐的基本信息-->
+    <insert id="add" parameterType="setmeal" keyProperty="id" useGeneratedKeys="true">
+        insert into t_setmeal values(null,#{name},#{code},#{helpCode},#{sex},#{age},#{price},#{remark},#{attention},#{img})
+    </insert>
+
+    <!--2.往中间表添加套餐和检查组的信息-->
+    <insert id="addCheckGroup" parameterType="int">
+        insert into t_setmeal_checkgroup values(#{setmealId},#{checkgroupId})
+    </insert>
+
+    <!--查询所有的图片-->
+    <select id="getImgs" parameterType="setmeal" resultType="setmeal">
+        select img from t_setmeal
+    </select>
+
+    <!--分页查询-->
+    <select id="findPage" parameterType="com.itheima.entity.QueryPageBean" resultType="setmeal">
+        select * from t_setmeal
+        <where>
+            <if test="queryString !=''">
+                name like '%${queryString}%' or code like '%${queryString}%' or helpCode like '%${queryString}%'
+            </if>
+        </where>
+    </select>
+</mapper>

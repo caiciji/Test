@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.OrderSettingDao">
+
+    <!--
+        1. 根据日期来查询预约的记录
+            1.1 默认情况下，mybatis使用日期条件查询的时候，默认使用的是timestamp 时间戳 日期+时间
+
+                javaType=Date , 告诉mybatis 请使用日期格式来查询数据 只要日期
+    -->
+    <select id="findOrderSettingByDate" parameterType="date" resultType="orderSetting">
+        select * from t_ordersetting where orderDate =#{date,javaType=Date}
+    </select>
+
+    <!--2.根据日期来更新预约记录中的可预约数量-->
+    <update id="update" parameterType="orderSetting">
+        update t_ordersetting set number=#{number} where orderDate =#{orderDate,javaType=Date};
+    </update>
+
+    <!--3.添加操作-->
+    <insert id="add" parameterType="orderSetting">
+        insert t_ordersetting values(null,#{orderDate},#{number},#{reservations})
+    </insert>
+
+
+    <!--4.根据月份，来查询指定月的预约信息-->
+    <select id="findOrderByMonth" parameterType="string" resultType="orderSetting">
+        select * from t_ordersetting where orderDate between  #{begin} and #{end}
+    </select>
+
+    <!--5.根据日期修改预约数量-->
+    <update id="updateOrderNumber">
+        update t_ordersetting set number =#{number} where orderDate=#{date}
+    </update>
+
+</mapper>

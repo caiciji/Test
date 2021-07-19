@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.dao.RoleDao">
+    <resultMap id="roleMap" type="role">
+
+        <!--
+            一种角色可以有多种权限
+                权限的信息，需要去查询权限表，根据角色的id来查询
+        -->
+        <collection property="permissions" column="id" select="com.itheima.dao.PermissionDao.findPermissionByRoleId"/>
+    </resultMap>
+
+
+    <!--根据用户的id来查询用户的角色信息
+        1.下面的语句只会查询角色的信息，并不知道这个角色有什么权限
+        2.在Role的类里面有一个属性 permissions 无法赋值，因为光查询角色表以及中间表根本不知道有什么权限
+        3.所以现在还得拿着角色id 去查询权限表，得到得这个角色有什么权限
+        4.一种角色可有具有多重权限
+        5. 综上：这里不能使用resultType，必须使用resultMap-->
+
+    <select id="findRoleByUid" parameterType="int" resultMap="roleMap">
+        select * from t_role r,t_user_role ur where ur.user_id=#{uid} and ur.role_id=r.id
+    </select>
+</mapper>
